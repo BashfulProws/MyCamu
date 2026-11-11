@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mycamu",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // KV holds OAuth state and the cached Camu session. Wrangler creates it on first deploy.
+  "kv_namespaces": [{ "binding": "OAUTH_KV" }],
+  "vars": {
+    "CAMU_BASE_URL": "https://student.camu.in",
+    "CAMU_LMS_URL": "https://teacher.camu.in",
+    // Attendance target used for "can I skip?" maths (Camu's own value is 0 for your portal).
+    "MIN_ATTENDANCE": "75",
+    // Full public URL of the MCP endpoint. Deploy once, copy your workers.dev address, then edit this and redeploy.
+    "MCP_SERVER_URL": "https://mycamu.YOUR-SUBDOMAIN.workers.dev/mcp"
+  }
+  // Secrets (set with `wrangler secret put`, never put them here):
+  //   CAMU_EMAIL, CAMU_PASSWORD, OWNER_PASSPHRASE
+}

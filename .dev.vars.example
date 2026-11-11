@@ -1,0 +1,4 @@
+# Copy to .dev.vars for `wrangler dev`. Never commit .dev.vars.
+CAMU_EMAIL=
+CAMU_PASSWORD=
+OWNER_PASSPHRASE=
