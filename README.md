@@ -50,12 +50,19 @@ On Windows PowerShell, if `npx` is blocked by the execution policy, use `npx.cmd
 
 Then try: "What's my attendance?", "What classes do I have tomorrow?", "What has been uploaded for Pricing?"
 
-## Filing files into iCloud Drive (optional)
+## Saving files to your cloud storage (optional)
 
-Add an iCloud Drive connector that has a `save_from_url` tool. Then ask Claude: "Get the new files for
-Pricing and put them in the right folders." Claude will read your folder layout, pick a folder for each file,
-call `get_file` for a temporary link (valid about 5 minutes) and pass it to `save_from_url`. iCloud downloads
-the file itself, so nothing large passes through the chat and this Worker keeps no copy of your files.
+Everything above works without this. To have Claude file course files into folders for you, add a second
+connector for your storage that has a tool to **save a file from a URL** (look for "save from URL" or
+"upload from link"). I have not tested any specific product, so check that yours offers it.
+
+Then ask Claude: "Get the new files for Pricing and put them in the right folders." Claude will read your
+folder layout, pick a folder for each file, call `get_file` for a temporary download link and pass that link
+to your storage connector. The storage service downloads the file itself, so nothing large passes through the
+chat, and this Worker keeps no copy of your files.
+
+The link expires after about 5 minutes. With no storage connector, `get_file` still gives you that link, and you
+can open it in a browser to download the file yourself.
 
 ## Settings
 
