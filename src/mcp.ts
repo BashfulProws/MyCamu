@@ -89,7 +89,7 @@ export function createServer(env: Env) {
   }));
 
   server.registerTool("get_file", {
-    description: "Gets one uploaded item. Pages come back as text. Files come back as a temporary download link that expires in about 5 minutes. To store a file in iCloud Drive, pass the link straight to the iCloud save_from_url tool right away.",
+    description: "Gets one uploaded item. Pages come back as text. Files come back as a temporary download link that expires in about 5 minutes. To store a file in the user's cloud storage, pass the link right away to a storage tool that can save a file from a URL (if one is connected); otherwise give the user the link to open in a browser.",
     inputSchema: z.object({
       subject: z.string(),
       title: z.string().describe("Item title, partial is fine"),
