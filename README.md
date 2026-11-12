@@ -10,7 +10,7 @@ Claude (any device) --OAuth--> your Worker (/mcp) --> MyCamu portal + LMS
 Tools: `get_timetable`, `get_attendance` (with "how many classes can I still miss" maths), `list_subjects`,
 `list_course_files`, `get_file`. Everything is read-only. Nothing marks attendance or submits assignments.
 
-**Never used a terminal, Git or Node? Start with the [beginner guide](BEGINNERS.md)** (Windows and Mac, step by step).
+**Never used a terminal, Git or Node? Start with the [beginner guide](BEGINNERS.md)** (Windows, Mac and Linux, step by step).
 Comfortable with a terminal? See the [install guide](INSTALL.md) (Claude, Claude Code, ChatGPT, troubleshooting).
 
 ## Read this first

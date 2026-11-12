@@ -1,4 +1,4 @@
-# Beginner install guide (Windows and Mac)
+# Beginner install guide (Windows, Mac and Linux)
 
 This guide assumes you have never used a terminal, Git or Node. Follow it top to bottom, copy and paste the commands
 exactly, and you will end up with Claude able to answer "What's my attendance?" from your own MyCamu account.
@@ -17,7 +17,7 @@ Time: about 20 to 30 minutes the first time. Cost: nothing.
 - You do **not** need Git. You will download the project as a ZIP file.
 
 You will need: your MyCamu email and password, an email address for Cloudflare, and a Claude account (or another AI app
-that supports custom connectors, see the bottom of this page).
+that supports custom connectors, see Part 10).
 
 ---
 
@@ -44,6 +44,11 @@ Node.js is the one program you need to install.
 2. Open it, click **Continue** through the screens, and **Install** (enter your Mac password if it asks).
 3. Click **Close**.
 
+### On Linux
+
+Go to https://nodejs.org and follow its instructions for your system. You need Node **version 20 or newer**. (The `nodejs`
+package in some Linux distributions is too old, so check with `node -v` after installing.) Then continue with Part 3.
+
 ## Part 3: Download the project
 
 1. Go to https://github.com/BashfulProws/MyCamu
@@ -51,6 +56,7 @@ Node.js is the one program you need to install.
 3. Unzip it:
    - **Windows:** right-click the ZIP in your Downloads folder and choose **Extract All**, then **Extract**.
    - **Mac:** double-click the ZIP in your Downloads folder.
+   - **Linux:** right-click the ZIP and choose **Extract Here**, or run `unzip` on it.
 4. You now have a folder named `MyCamu-main`. Open it. You should see files such as `package.json`, `README.md` and a folder
    called `src`. (On Windows, sometimes there is a second `MyCamu-main` folder inside the first. If you do not see
    `package.json`, open the inner one.)
@@ -77,6 +83,11 @@ A black window opens. This is Command Prompt, and it is already pointed at the r
 3. Drag the `MyCamu-main` folder from Finder into the Terminal window. Its path is filled in for you.
 4. Press **Enter**.
 
+### On Linux
+
+Open your file manager, right-click inside the `MyCamu-main` folder, and choose **Open in Terminal**. (If you do not see
+that option, open any terminal and type `cd ` followed by the folder path.)
+
 ### Check that it worked
 
 Type this and press **Enter**:
@@ -91,7 +102,7 @@ found", close the terminal window, open a new one (Part 4 again), and try again.
 Now check you are in the right folder. Type:
 
 - Windows: `dir`
-- Mac: `ls`
+- Mac or Linux: `ls`
 
 You should see `package.json` in the list. If not, you are in the wrong folder. Redo Part 4.
 
@@ -146,6 +157,7 @@ Your copy needs to know its public address. Skipping this causes a connection er
 2. Open it with:
    - **Windows:** right-click > **Open with** > **Notepad**.
    - **Mac:** right-click > **Open With** > **TextEdit**. If TextEdit shows rich text, choose **Format > Make Plain Text** first.
+   - **Linux:** open it with any text editor, such as Text Editor, gedit or Kate.
 3. Find the line that says:
 
    ```
@@ -186,7 +198,7 @@ is not shown on screen. That is normal**, so just type or paste it and press **E
    npx wrangler secret put OWNER_PASSPHRASE
    ```
 
-(To paste in Command Prompt, right-click inside the window. In Mac Terminal, press Cmd+V.)
+(To paste in Command Prompt, right-click inside the window. In Mac Terminal, press Cmd+V. In a Linux terminal, press Ctrl+Shift+V.)
 
 Each command should end with a message saying the secret was uploaded successfully.
 
@@ -199,32 +211,55 @@ npx wrangler deploy
 Now check that it is alive: open your address (for example `https://mycamu.somename.workers.dev`, **without** `/mcp`) in a
 browser. You should see the text **"Camu MCP is running. Add /mcp as a connector."**
 
-## Part 10: Connect Claude
+## Part 10: Connect your AI app
 
-1. Open Claude (claude.ai in your browser, or the Claude app).
+Your connector address is your address **with `/mcp`** on the end, for example
+`https://mycamu.somename.workers.dev/mcp`. When an app opens a page asking for a passphrase, type the one you made up
+in Part 8 and click **Approve**.
+
+Which app do you use?
+
+### Claude (website, desktop app or phone app) - tested
+
+1. Open Claude (claude.ai in a browser, or the app).
 2. Go to **Settings > Connectors** (it may be labelled **Customize > Connectors**).
 3. Click **Add custom connector**.
-4. Name: `MyCamu`. URL: your address **with `/mcp`** on the end, for example
-   `https://mycamu.somename.workers.dev/mcp`. Leave any advanced fields empty.
-5. Click **Add**, then **Connect**.
-6. A page opens asking for a passphrase. Type the passphrase you made up in Part 8 and click **Approve**.
-7. Start a new chat and make sure the MyCamu connector is switched on in the tools menu.
+4. Name: `MyCamu`. URL: your address with `/mcp`. Leave any advanced fields empty.
+5. Click **Add**, then **Connect**. Enter your passphrase and click **Approve**.
+6. Start a new chat and make sure the MyCamu connector is switched on in the tools menu.
 
-Now try asking:
+Once it works on the website, it also shows up in the phone app on the same account.
+
+> **Team or Enterprise Claude plan?** Only an organization Owner can add custom connectors. If you cannot see the Add
+> button, ask your Owner, or use a personal Claude account.
+
+### ChatGPT - untested
+
+ChatGPT lets some paid plans add custom connectors ("apps"), using **Developer mode**. Free plans usually cannot. Go to
+**Settings > Connectors > Advanced**, turn on **Developer mode**, create a new connector, paste your address with `/mcp`,
+choose **OAuth**, and enter your passphrase when the page opens. Menus and plans change often, so check OpenAI's current
+help page if yours looks different.
+
+### Gemini, Cursor, VS Code, Codex and other apps - untested
+
+Some of these are for programmers (they use a terminal or a settings file). The exact steps for each are in
+[INSTALL.md, Step 5](INSTALL.md#step-5-connect-your-ai-app). The regular Gemini website and app may not allow custom
+connectors. Any app that can add a custom **remote MCP server** with **OAuth** can work, using the same address.
+
+**Not sure if your app works?** Look in its settings for "connectors", "tools", "MCP" or "integrations", and for an option
+to add a custom or remote one. If there is none, your app cannot use this.
+
+---
+
+### Try it
+
+Start a new chat with the MyCamu connector switched on, and ask:
 
 - "What's my attendance in each subject? Can I skip tomorrow's class?"
 - "What classes do I have this week?"
 - "What has been uploaded for Pricing?"
 
 The first answer can take a few seconds because your copy has to log in to MyCamu. After that it is quick.
-
-> **Team or Enterprise Claude plan?** Only an organization Owner can add custom connectors. If you cannot see the Add
-> button, ask your Owner, or use a personal Claude account.
-
-**Other AI apps:** ChatGPT, Gemini and others can work if they let you add a custom remote MCP connector with OAuth, using
-the same address. Only Claude has been tested. See [INSTALL.md](INSTALL.md) for details.
-
----
 
 ## If something goes wrong
 

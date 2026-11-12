@@ -54,6 +54,8 @@ Node.js (the "LTS" button) from https://nodejs.org and Git from https://git-scm.
 
 **Mac:** install the same two from those websites, or with Homebrew: `brew install node git`.
 
+**Linux:** use your package manager, or the Node.js installer instructions at https://nodejs.org. For example on Ubuntu or Debian: `sudo apt install git` and install Node 20 or newer from https://nodejs.org (the `nodejs` package in many distributions is too old). Check with `node -v`.
+
 **Important: close the terminal and open a new one** after installing. An already-open terminal does not see newly installed
 programs, which is the most common reason `node` or `git` is "not recognized" right after installing. Then run
 `node -v` and `git --version` again to confirm.
@@ -126,8 +128,27 @@ npx wrangler deploy
 
 ## Step 5: Connect your AI app
 
-Use this address as the connector URL: `https://mycamu.<your-subdomain>.workers.dev/mcp`
-(with `/mcp` on the end). When the app opens a page asking for a passphrase, enter your `OWNER_PASSPHRASE`.
+Your connector address is `https://mycamu.<your-subdomain>.workers.dev/mcp` (with `/mcp` on the end). When an app opens
+a page asking for a passphrase, enter your `OWNER_PASSPHRASE`.
+
+**Will my app work?** It needs to support a **custom remote MCP server** over HTTPS with **OAuth sign-in** and automatic
+client registration. This server provides all of that. Apps that only support local servers, or that make you paste a
+fixed client ID and secret, will not work. Support in each app changes often, so check the app's own docs if a menu
+below does not match.
+
+| App | Status | Where |
+|---|---|---|
+| Claude (web, desktop, mobile) | Tested | below |
+| Claude Code | Same server as Claude, untested here | below |
+| ChatGPT | Untested | below |
+| Gemini CLI | Untested | below |
+| Cursor | Untested | below |
+| VS Code (GitHub Copilot) | Untested | below |
+| Codex CLI | Untested | below |
+| Anything else | Untested | "Any other app" below |
+
+"Untested" means the author has not tried it. The steps come from each app's public documentation. If one does not work,
+please open an issue and say which app, which plan and the exact error.
 
 ### Claude (claude.ai, Claude Desktop, mobile)
 
@@ -142,9 +163,10 @@ https://support.claude.com/en/articles/11175166-get-started-with-custom-connecto
 5. In a new chat, switch the connector on from the tools menu if it is not already on.
 
 **Team or Enterprise plans:** an organization Owner must first add the connector under **Organization settings >
-Connectors**. Members then connect it from **Settings > Connectors**. If you are a member and cannot see the
-"Add custom connector" button, ask your Owner. Note that a custom connector added by an Owner is visible
-to the organization, so consider using a personal Claude account instead for your own college login.
+Connectors**. Members then connect it from **Settings > Connectors**. A custom connector added by an Owner is visible to
+the organization, so consider a personal Claude account for your own college login.
+
+Once connected on the web, the connector also appears in the mobile app on the same account.
 
 ### Claude Code (terminal)
 
@@ -156,23 +178,96 @@ Then run `/mcp` inside Claude Code and authenticate it. A browser page asks for 
 
 ### ChatGPT
 
-This has not been tested by the author. ChatGPT supports remote MCP servers as custom connectors (which OpenAI also
-calls "apps"), usually behind **Developer mode**, and the plans that offer it and the menu names change
-often. Check OpenAI's current help article before you start. The general path is:
+ChatGPT supports remote MCP servers as custom connectors (OpenAI also calls them "apps"), usually behind **Developer
+mode**. The plans that offer it and the menu names change often, and sources disagree on which plans can use write-capable
+connectors (this server is read-only). Free plans generally do not offer custom connectors. Check OpenAI's current help
+article first. The general path:
 
-1. In ChatGPT, open **Settings > Connectors > Advanced** and turn on **Developer mode** (on Business and
-   Enterprise workspaces an admin may need to allow it first).
+1. In ChatGPT, open **Settings > Connectors > Advanced** and turn on **Developer mode** (on Business and Enterprise
+   workspaces an admin may need to allow it first).
 2. Create a new connector, paste the address ending in `/mcp`, and choose **OAuth** as the authentication.
 3. When the passphrase page opens, enter your `OWNER_PASSPHRASE`.
 
-Free ChatGPT plans generally do not offer custom connectors. If it does not work, open an issue and say which plan
-and which error you saw.
+### Gemini CLI
 
-### Gemini and other apps
+Gemini CLI reads servers from `~/.gemini/settings.json`. Either run:
 
-Gemini's developer tools (such as the Gemini CLI) and editors like Cursor and VS Code can connect to remote MCP servers.
-Use the same address and choose OAuth or "remote HTTP" when asked. The regular Gemini app may not allow custom
-connectors. Anything that can add a custom remote MCP server with OAuth should work, but only Claude has been tested.
+```bash
+gemini mcp add --transport http mycamu https://mycamu.<your-subdomain>.workers.dev/mcp
+```
+
+or add this to the settings file yourself:
+
+```json
+{
+  "mcpServers": {
+    "mycamu": { "httpUrl": "https://mycamu.<your-subdomain>.workers.dev/mcp" }
+  }
+}
+```
+
+Then start `gemini`, run `/mcp auth mycamu` and approve with your passphrase in the browser page. `/mcp list` shows whether
+it is connected. The regular Gemini app and website may not allow custom connectors. Check Google's current docs.
+
+### Cursor
+
+Add to `~/.cursor/mcp.json` (all projects) or `.cursor/mcp.json` (one project):
+
+```json
+{
+  "mcpServers": {
+    "mycamu": { "url": "https://mycamu.<your-subdomain>.workers.dev/mcp" }
+  }
+}
+```
+
+Restart Cursor, open **Settings > MCP**, and click **Connect** or **Authenticate** next to `mycamu`. A browser page asks for
+your passphrase.
+
+### VS Code (GitHub Copilot)
+
+Create `.vscode/mcp.json` in a workspace, or run **MCP: Open User Configuration** from the Command Palette for all
+workspaces. Note that this file uses `servers`, not `mcpServers`:
+
+```json
+{
+  "servers": {
+    "mycamu": { "type": "http", "url": "https://mycamu.<your-subdomain>.workers.dev/mcp" }
+  }
+}
+```
+
+VS Code shows a **Start** button above the entry. Click it, and a browser window opens for the passphrase. Then use Copilot
+Chat in **Agent** mode.
+
+### Codex CLI
+
+```bash
+codex mcp add mycamu --url https://mycamu.<your-subdomain>.workers.dev/mcp
+codex mcp login mycamu
+```
+
+Or add this to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.mycamu]
+url = "https://mycamu.<your-subdomain>.workers.dev/mcp"
+```
+
+### Any other app
+
+If your app can add a custom remote MCP server, give it:
+
+- **URL:** `https://mycamu.<your-subdomain>.workers.dev/mcp`
+- **Transport:** Streamable HTTP ("HTTP", not "SSE" and not "stdio")
+- **Authentication:** OAuth, with automatic ("dynamic") client registration. No client ID or secret is needed.
+
+Useful addresses if an app asks for them: authorization server metadata at
+`https://mycamu.<your-subdomain>.workers.dev/.well-known/oauth-authorization-server`, and client registration at
+`https://mycamu.<your-subdomain>.workers.dev/register`.
+
+If an app cannot do any of this, you can still use the Worker from a script or tool that speaks MCP. See the MCP
+documentation at https://modelcontextprotocol.io.
 
 ## Step 6: Try it
 
