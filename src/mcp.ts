@@ -110,7 +110,7 @@ export function createServer(env: Env) {
   }));
 
   server.registerTool("read_file", {
-    description: "Reads the TEXT of an uploaded file so you can summarize or answer questions about it. Works for PDF, PowerPoint (.pptx), Word (.docx), Excel (.xlsx) and text files. Long files come back in parts: if the reply says more is available, call again with the given offset. Scanned PDFs have no text and cannot be read.",
+    description: "Reads the TEXT of an uploaded file so you can summarize or answer questions about it. Works for PDF, PowerPoint (.pptx and .ppt), Word (.docx and .doc), Excel (.xlsx and .xls), OpenDocument, RTF, HTML and text files, and ZIPs of those. Long files come back in parts: if the reply says more is available, call again with the given offset. Scanned PDFs have no text and cannot be read.",
     inputSchema: z.object({
       subject: z.string().describe("Subject name or code, partial is fine"),
       title: z.string().describe("Item title, partial is fine (see list_course_files)"),

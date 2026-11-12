@@ -58,13 +58,27 @@ Then try: "What's my attendance?", "What classes do I have tomorrow?", "What has
 
 Ask Claude things like "summarize the Session 4 notes for Rural Marketing" or "what are the key points of the Pricing case?".
 The `read_file` tool downloads the file inside your Worker, pulls out the text and sends only the text to the AI.
-It reads **PDF, PowerPoint (.pptx), Word (.docx), Excel (.xlsx), text and HTML files**, and ZIP files that contain them.
+
+| File type | Supported |
+|---|---|
+| PDF | Yes (text PDFs only, see below) |
+| PowerPoint | `.pptx`, `.ppsx` and old `.ppt` (slide text, plus speaker notes) |
+| Word | `.docx` and old `.doc` (including tables) |
+| Excel | `.xlsx` and old `.xls` (every sheet, shown as tab-separated rows) |
+| OpenDocument | `.odt`, `.odp`, `.ods` |
+| Other | RTF, HTML, plain text, CSV, Markdown, and ZIP files containing any of these |
+
 Long files come back in parts, and the AI asks for the next part itself.
 
-Limits: scanned PDFs (pictures of pages) have no text and cannot be read. Images, videos and old `.ppt`, `.doc` and
-`.xls` files are not supported, and files over 30 MB are refused. For those, use `get_file` and download the file yourself.
-Reading a big file uses more of your Worker's processing time. If you see errors on a very large PDF with the free
-Cloudflare plan, that is the likely reason, and the paid Workers plan (about 5 US dollars a month) removes that limit.
+Limits:
+- **Scanned PDFs** (pictures of pages) have no text and cannot be read. Images and videos are not supported either.
+- Password-protected files cannot be read, and files over 30 MB are refused. Use `get_file` to download those yourself.
+- Excel dates appear as plain numbers, and charts, pictures and formatting are not included.
+- Old `.ppt` files that were saved many times with "fast save" can show text from earlier versions of a slide.
+- **Free Cloudflare plan:** the free plan allows only about 10 milliseconds of processing per request. Small Word, Excel and
+  PowerPoint files fit, but PDFs and large files may fail with an "exceeded CPU time limit" error. The paid Workers plan
+  (about 5 US dollars a month) allows far more and removes the problem. If you only want attendance, timetable and file
+  links, the free plan is fine.
 
 ## Saving files to your cloud storage (optional)
 
