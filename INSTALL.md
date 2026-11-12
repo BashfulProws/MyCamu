@@ -19,14 +19,45 @@ Cloudflare account, give it your MyCamu login, and connect your AI app to it. Th
 |---|---|
 | A MyCamu student login | The email and password you use on the MyCamu site. Single sign-on logins (for example "Sign in with Google" only) may not work, because the Worker logs in with email and password. |
 | A free Cloudflare account | https://dash.cloudflare.com/sign-up. The free plan is enough. |
-| Node.js 20 or newer | https://nodejs.org. Check with `node -v`. |
-| Git | https://git-scm.com. Or download the repo as a ZIP from GitHub instead. |
+| Node.js 20 or newer | Step 0 shows how to install it. Check with `node -v`. |
+| Git | Step 0 shows how to install it. Optional: you can download the repo as a ZIP instead. |
 | An AI app that supports custom remote MCP connectors | See "Connect your AI app" below. Claude is the one this was built and tested with. |
 
 **Time:** about 10 to 15 minutes. **Cost:** nothing on the free tiers.
 
 **Not for everyone:** do not use this with someone else's login, and do not share your Worker address or passphrase.
 This tool talks to MyCamu's undocumented internal API. It is not made or approved by Camu or your college.
+
+## Step 0: Install Node.js and Git (skip if you already have them)
+
+You need both programs before anything else. Check first, in a terminal (on Windows, PowerShell):
+
+```bash
+node -v
+git --version
+```
+
+If both print a version number (Node 20 or higher), go to Step 1. If you see "not recognized" or "command not found",
+install what is missing.
+
+**Windows 10 or 11.** Easiest is winget, which is built in. Run in PowerShell:
+
+```powershell
+winget install OpenJS.NodeJS.LTS
+winget install Git.Git
+```
+
+If `winget` is not available, download and run the installers instead, accepting the defaults:
+Node.js (the "LTS" button) from https://nodejs.org and Git from https://git-scm.com/download/win.
+
+**Mac:** install the same two from those websites, or with Homebrew: `brew install node git`.
+
+**Important: close the terminal and open a new one** after installing. An already-open terminal does not see newly installed
+programs, which is the most common reason `node` or `git` is "not recognized" right after installing. Then run
+`node -v` and `git --version` again to confirm.
+
+No Git? You can skip it. On the repo page, click **Code > Download ZIP**, unzip it, and open a terminal in the unzipped
+`MyCamu-main` folder instead of running `git clone`.
 
 ## Step 1: Get the code
 

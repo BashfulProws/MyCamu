@@ -23,7 +23,7 @@ Tools: `get_timetable`, `get_attendance` (with "how many classes can I still mis
 
 ## Deploy (about 10 minutes)
 
-You need a free [Cloudflare account](https://dash.cloudflare.com/sign-up) and Node.js 20 or newer.
+You need a free [Cloudflare account](https://dash.cloudflare.com/sign-up), Node.js 20 or newer and Git. On Windows, install the last two with `winget install OpenJS.NodeJS.LTS` and `winget install Git.Git`, then open a new terminal. The [install guide](INSTALL.md) has the details.
 
 ```bash
 git clone https://github.com/BashfulProws/MyCamu.git
