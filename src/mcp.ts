@@ -1,7 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import { Camu, istDate, pageToText, type ContentItem } from "./camu";
+import { extractFileText } from "./extract";
 
+const MAX_DOWNLOAD_BYTES = 30_000_000; // refuse very large files so the Worker stays within its memory limit
+const DEFAULT_CHARS = 40_000; // one reply holds about this much text; the agent can ask for the next part
 
 const text = (t: string) => ({ content: [{ type: "text" as const, text: t }] });
 const fail = (e: unknown) => ({ isError: true, content: [{ type: "text" as const, text: e instanceof Error ? e.message : String(e) }] });
@@ -89,7 +92,7 @@ export function createServer(env: Env) {
   }));
 
   server.registerTool("get_file", {
-    description: "Gets one uploaded item. Pages come back as text. Files come back as a temporary download link that expires in about 5 minutes. To store a file in the user's cloud storage, pass the link right away to a storage tool that can save a file from a URL (if one is connected); otherwise give the user the link to open in a browser.",
+    description: "Gets one uploaded item. Pages come back as text. Files come back as a temporary download link that expires in about 5 minutes. To READ or summarize a file, use read_file instead (the agent usually cannot open this link). To store a file in the user's cloud storage, pass the link right away to a storage tool that can save a file from a URL (if one is connected); otherwise give the user the link to open in a browser.",
     inputSchema: z.object({
       subject: z.string(),
       title: z.string().describe("Item title, partial is fine"),
@@ -102,11 +105,45 @@ export function createServer(env: Env) {
       if (item.type === "PAGE") return { item, page: pageToText(item.html ?? "") };
       return { item, link: await c.fileLink(item.id) };
     });
-    if ("page" in r) return text(`${r.item.title}
+    if ("page" in r) return text(`${r.item.title}\n\n${r.page || "(empty page)"}`);
+    return text(`${r.link.name}${r.link.external ? " (external link)" : ""}\n${r.link.url}`);
+  }));
 
-${r.page || "(empty page)"}`);
-    return text(`${r.link.name}${r.link.external ? " (external link)" : ""}
-${r.link.url}`);
+  server.registerTool("read_file", {
+    description: "Reads the TEXT of an uploaded file so you can summarize or answer questions about it. Works for PDF, PowerPoint (.pptx), Word (.docx), Excel (.xlsx) and text files. Long files come back in parts: if the reply says more is available, call again with the given offset. Scanned PDFs have no text and cannot be read.",
+    inputSchema: z.object({
+      subject: z.string().describe("Subject name or code, partial is fine"),
+      title: z.string().describe("Item title, partial is fine (see list_course_files)"),
+      offset: z.number().int().min(0).optional().describe("Character position to continue from (default 0)"),
+      max_chars: z.number().int().min(1000).max(100000).optional().describe(`Most characters to return (default ${DEFAULT_CHARS})`),
+    }),
+    annotations: { readOnlyHint: true },
+  }, guard(async ({ subject, title, offset, max_chars }) => {
+    const r = await camu().run(async (c) => {
+      const sub = await c.findSubject(subject);
+      const item = pickItem(await c.content(sub), title);
+      if (item.type === "PAGE") return { item, page: pageToText(item.html ?? "") };
+      return { item, link: await c.fileLink(item.id) };
+    });
+    let body: string, kind: string, note: string | undefined;
+    if ("page" in r) { body = r.page ?? ""; kind = "Page"; }
+    else {
+      if (r.link.external) return text(`${r.item.title} is an external link, not a file: ${r.link.url}`);
+      const res = await fetch(r.link.url);
+      if (!res.ok) throw new Error(`Download failed (${res.status}).`);
+      const len = Number(res.headers.get("content-length") ?? 0);
+      if (len > MAX_DOWNLOAD_BYTES) throw new Error(`File is too large to read here (${(len / 1e6).toFixed(0)} MB). Use get_file for a download link.`);
+      const buf = await res.arrayBuffer();
+      if (buf.byteLength > MAX_DOWNLOAD_BYTES) throw new Error(`File is too large to read here (${(buf.byteLength / 1e6).toFixed(0)} MB). Use get_file for a download link.`);
+      ({ text: body, kind, note } = await extractFileText(buf, r.link.name, r.link.contentType));
+    }
+    const start = offset ?? 0, size = max_chars ?? DEFAULT_CHARS;
+    if (!body.trim()) return text(`${r.item.title} (${kind}): no text found.${note ? " " + note : ""}`);
+    if (start >= body.length) return text(`${r.item.title}: offset ${start} is past the end (${body.length} characters).`);
+    const part = body.slice(start, start + size), end = start + part.length;
+    const head = `${r.item.title} (${kind}), characters ${start}-${end} of ${body.length}${note ? "\n" + note : ""}`;
+    const tail = end < body.length ? `\n\n[More available. Call read_file again with offset=${end}.]` : "\n\n[End of file.]";
+    return text(`${head}\n\n${part}${tail}`);
   }));
 
   return server;

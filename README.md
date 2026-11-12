@@ -8,7 +8,8 @@ Claude (any device) --OAuth--> your Worker (/mcp) --> MyCamu portal + LMS
 ```
 
 Tools: `get_timetable`, `get_attendance` (with "how many classes can I still miss" maths), `list_subjects`,
-`list_course_files`, `get_file`. Everything is read-only. Nothing marks attendance or submits assignments.
+`list_course_files`, `read_file` (reads a file's text so the AI can summarize it) and `get_file` (a temporary download
+link). Everything is read-only. Nothing marks attendance or submits assignments.
 
 **Never used a terminal, Git or Node? Start with the [beginner guide](BEGINNERS.md)** (Windows, Mac and Linux, step by step).
 Comfortable with a terminal? See the [install guide](INSTALL.md) (Claude, Claude Code, ChatGPT, troubleshooting).
@@ -52,6 +53,18 @@ On Windows PowerShell, if `npx` is blocked by the execution policy, use `npx.cmd
    A page opens asking for your passphrase. Enter it once to approve.
 
 Then try: "What's my attendance?", "What classes do I have tomorrow?", "What has been uploaded for Pricing?"
+
+## Reading and summarizing files
+
+Ask Claude things like "summarize the Session 4 notes for Rural Marketing" or "what are the key points of the Pricing case?".
+The `read_file` tool downloads the file inside your Worker, pulls out the text and sends only the text to the AI.
+It reads **PDF, PowerPoint (.pptx), Word (.docx), Excel (.xlsx), text and HTML files**, and ZIP files that contain them.
+Long files come back in parts, and the AI asks for the next part itself.
+
+Limits: scanned PDFs (pictures of pages) have no text and cannot be read. Images, videos and old `.ppt`, `.doc` and
+`.xls` files are not supported, and files over 30 MB are refused. For those, use `get_file` and download the file yourself.
+Reading a big file uses more of your Worker's processing time. If you see errors on a very large PDF with the free
+Cloudflare plan, that is the likely reason, and the paid Workers plan (about 5 US dollars a month) removes that limit.
 
 ## Saving files to your cloud storage (optional)
 

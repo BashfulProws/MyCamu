@@ -276,6 +276,7 @@ Ask your AI app:
 - "What's my attendance in each subject? Can I skip tomorrow's class?"
 - "What classes do I have this week?"
 - "What has been uploaded for <subject name>?"
+- "Summarize the file called <file title> for <subject>."
 - "Give me the link for the file called <file title>."
 
 The first request after you connect can take a few seconds, because the Worker logs in to MyCamu. After that it
@@ -296,6 +297,7 @@ Without one, ask for the file link and open it in your browser. The link expires
 | The passphrase page says "Wrong passphrase" | Use the value you set for `OWNER_PASSPHRASE`, not your Camu password. After 5 wrong tries from one network you are locked out for 15 minutes. To reset it, run `npx wrangler secret put OWNER_PASSPHRASE` again. |
 | "Camu login failed", "Camu login is paused" or "Camu is rate-limiting logins" | The Camu email or password is wrong, or MyCamu rate-limited the login. The Worker waits 5 to 15 minutes before it tries again. **Do not keep retrying**, because repeated failed logins could lock your MyCamu account. Check the email and password on the MyCamu website first, then fix the secret with `npx wrangler secret put CAMU_PASSWORD` and wait. |
 | It worked, then stopped working | You may have changed your Camu password (update the secret), or MyCamu changed its internals. Check the repo for an update. |
+| "Cannot read ... files as text", or a summary fails on a scanned PDF | `read_file` handles PDF, PowerPoint (.pptx), Word (.docx), Excel (.xlsx), text and HTML. Scanned PDFs, images, videos and old .ppt/.doc/.xls files cannot be read. Download those with `get_file` instead. |
 | No subjects or empty timetable | The term may not have started, or classes are not scheduled for that date. Try a different date range. |
 | The connector is missing from a chat | Turn it on from the tools or connectors menu of that chat. |
 
