@@ -1,5 +1,7 @@
 # Install guide
 
+> Never used a terminal, Git or Node? Use the [beginner guide](BEGINNERS.md) instead. It is the same setup with every step spelled out.
+
 This guide takes you from nothing to Claude (or another AI app) answering "What's my attendance?" from your own
 MyCamu account. Read "Before you start" first. It explains the one idea that makes everything else make sense.
 
