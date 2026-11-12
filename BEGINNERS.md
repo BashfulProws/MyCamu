@@ -161,7 +161,7 @@ Your copy needs to know its public address. Skipping this causes a connection er
 3. Find the line that says:
 
    ```
-   "MCP_SERVER_URL": "https://mycamu.YOUR-SUBDOMAIN.workers.dev/mcp"
+   "MCP_SERVER_URL": "https://mycamu.your-subdomain.workers.dev/mcp"
    ```
 
 4. Replace the whole address inside the quotes with **your** address from Part 6, and keep `/mcp` on the end. For example:
@@ -209,7 +209,7 @@ npx wrangler deploy
 ```
 
 Now check that it is alive: open your address (for example `https://mycamu.somename.workers.dev`, **without** `/mcp`) in a
-browser. You should see the text **"Camu MCP is running. Add /mcp as a connector."**
+browser. You should see the text **"MyCamu 0.2.0 is running. Add /mcp as a connector."** (an older install says "Camu MCP is running", which also means it works)
 
 ## Part 10: Connect your AI app
 
@@ -268,12 +268,18 @@ The first answer can take a few seconds because your copy has to log in to MyCam
 | `'node' is not recognized` or `command not found: node` | Close the terminal, open a new one (Part 4), try again. Still failing: reinstall Node (Part 2). |
 | `npm install` shows `ERR!` | Check your internet, run it again. Make sure `dir`/`ls` showed `package.json` (Part 4). |
 | Red text: "running scripts is disabled on this system" (Windows) | You are in PowerShell. Close it and use Command Prompt (Part 4). |
+| "a namespace with this account ID and title already exists" (code 10014) | An earlier deploy failed partway and left its storage behind. In the Cloudflare dashboard open **Storage & Databases > KV**, delete the namespace named `mycamu-oauth-kv`, then run `npx wrangler deploy` again. |
 | "Token audience does not match resource server" when connecting | Part 7 was skipped or has a typo. The address must end in `/mcp`, with no trailing `/`. Fix it, run `npx wrangler deploy` again, then remove and re-add the connector. |
 | "Wrong passphrase" | Use the passphrase from Part 8, not your Camu password. Five wrong tries lock you out for 15 minutes. To reset it, run `npx wrangler secret put OWNER_PASSPHRASE` again. |
 | "Camu login failed" / "login is paused" / "rate-limiting logins" | Your Camu email or password is wrong, or MyCamu paused logins. **Do not keep retrying**, since too many failed logins can lock your MyCamu account. Check that you can log in on the MyCamu website, fix the secret with `npx wrangler secret put CAMU_PASSWORD`, then wait 15 minutes before trying again. |
 | The browser does not open for `wrangler login` | Copy the link the terminal prints and paste it into your browser. |
 
 More help and details: [INSTALL.md](INSTALL.md).
+
+## Updating later
+
+When a new version comes out, follow [UPDATING.md](UPDATING.md). It covers the ZIP method used in this guide, and you keep your
+login, passphrase and connector.
 
 ## Removing it later
 

@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import { Camu, istDate, pageToText, type ContentItem } from "./camu";
 import { extractFileText } from "./extract";
+import { VERSION } from "./version";
 
 const MAX_DOWNLOAD_BYTES = 30_000_000; // refuse very large files so the Worker stays within its memory limit
 const DEFAULT_CHARS = 40_000; // one reply holds about this much text; the agent can ask for the next part
@@ -25,7 +26,7 @@ function pickItem(items: ContentItem[], title: string): ContentItem {
 }
 
 export function createServer(env: Env) {
-  const server = new McpServer({ name: "camu", version: "0.1.0" });
+  const server = new McpServer({ name: "camu", version: VERSION });
   const camu = () => new Camu(env);
   const target = Number(env.MIN_ATTENDANCE) || 75;
 

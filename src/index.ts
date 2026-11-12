@@ -2,6 +2,7 @@ import OAuthProvider, { type AuthRequest } from "@cloudflare/workers-oauth-provi
 import { createMcpHandler } from "agents/mcp/server";
 import { env } from "cloudflare:workers";
 import { createServer } from "./mcp";
+import { VERSION } from "./version";
 
 // Only you can approve a connector: the approval page asks for OWNER_PASSPHRASE.
 
@@ -38,7 +39,7 @@ ${error ? `<p class=e>${esc(error)}</p>` : ""}
 const authHandler: ExportedHandler<Env> = {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.pathname !== "/authorize") return new Response("Camu MCP is running. Add /mcp as a connector.", { status: 200 });
+    if (url.pathname !== "/authorize") return new Response(`MyCamu ${VERSION} is running. Add /mcp as a connector.`, { status: 200 });
 
     if (request.method === "GET") {
       const req = await env.OAUTH_PROVIDER.parseAuthRequest(request);

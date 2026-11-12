@@ -14,6 +14,8 @@ link). Everything is read-only. Nothing marks attendance or submits assignments.
 **Never used a terminal, Git or Node? Start with the [beginner guide](BEGINNERS.md)** (Windows, Mac and Linux, step by step).
 Comfortable with a terminal? See the [install guide](INSTALL.md) (Claude, Claude Code, ChatGPT, troubleshooting).
 
+**Already installed an older version?** See [UPDATING.md](UPDATING.md). What changed: [CHANGELOG.md](CHANGELOG.md).
+
 ## Read this first
 
 - This uses MyCamu's **undocumented internal API**. It is not affiliated with or endorsed by Camu or your college,
